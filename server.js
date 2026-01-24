@@ -1,43 +1,54 @@
-// server.js
-const express = require('express');
-const fs = require('fs');
-const path = require('path');
-const bodyParser = require('body-parser');
+const express = require("express");
+const fetch = require("node-fetch");
+const bodyParser = require("body-parser");
+const path = require("path");
 
 const app = express();
 const PORT = 3000;
 
-// Middleware
-app.use(express.static(path.join(__dirname, 'public')));
-app.use(bodyParser.urlencoded({ extended: true }));
+/* ===== JSON BIN CONFIG ===== */
+const BIN_ID = "PUT_YOUR_BIN_ID_HERE";
+const API_KEY = "PUT_YOUR_API_KEY_HERE";
+const BIN_URL = `https://api.jsonbin.io/v3/b/${BIN_ID}`;
+
+/* ===== MIDDLEWARE ===== */
+app.use(express.static(path.join(__dirname, "public")));
 app.use(bodyParser.json());
 
-// Path to projects JSON
-const projectsFile = path.join(__dirname, 'projects.json');
-
-// Get all projects
-app.get('/api/projects', (req, res) => {
-  if (!fs.existsSync(projectsFile)) fs.writeFileSync(projectsFile, '[]');
-  const data = JSON.parse(fs.readFileSync(projectsFile));
-  res.json(data);
+/* ===== GET PROJECTS ===== */
+app.get("/api/projects", async (req, res) => {
+  try {
+    const r = await fetch(BIN_URL, {
+      headers: { "X-Master-Key": API_KEY }
+    });
+    const data = await r.json();
+    res.json(data.record);
+  } catch (err) {
+    res.status(500).json({ error: "Failed to fetch projects" });
+  }
 });
 
-// Add new project
-app.post('/api/projects', (req, res) => {
-  const { title, description, image } = req.body;
-  if(!title || !description || !image){
-    return res.status(400).json({error:'All fields required'});
-  }
+/* ===== SAVE ALL PROJECTS ===== */
+app.post("/api/projects/save", async (req, res) => {
+  try {
+    const projects = req.body;
 
-  const newProject = { title, description, image };
-  let projects = [];
-  if (fs.existsSync(projectsFile)) {
-    projects = JSON.parse(fs.readFileSync(projectsFile));
+    await fetch(BIN_URL, {
+      method: "PUT",
+      headers: {
+        "Content-Type": "application/json",
+        "X-Master-Key": API_KEY
+      },
+      body: JSON.stringify(projects)
+    });
+
+    res.json({ message: "Projects saved successfully" });
+  } catch (err) {
+    res.status(500).json({ error: "Failed to save projects" });
   }
-  projects.push(newProject);
-  fs.writeFileSync(projectsFile, JSON.stringify(projects, null, 2));
-  res.json({message:'Project added successfully'});
 });
 
-// Start server
-app.listen(PORT, () => console.log(`Server running on http://localhost:${PORT}`));
+/* ===== START SERVER ===== */
+app.listen(PORT, () => {
+  console.log(`🔥 Server running on http://localhost:${PORT}`);
+});
