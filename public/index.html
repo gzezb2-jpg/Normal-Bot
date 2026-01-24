@@ -1,0 +1,345 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<title>SlowDeath Team</title>
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+
+<link href="https://fonts.googleapis.com/css2?family=Poppins:wght@300;400;600;700&display=swap" rel="stylesheet">
+
+<style>
+:root{
+  --bg:#000;
+  --card:#111;
+  --text:#fff;
+  --muted:#999;
+}
+
+*{
+  margin:0;
+  padding:0;
+  box-sizing:border-box;
+  font-family:'Poppins',sans-serif;
+}
+
+body{
+  background: url("bg.png");
+  background-size: cover; /* يجعل الصورة تغطي الشاشة بالكامل */
+  background-position: center;
+  background-attachment: fixed; /* يبقي الخلفية ثابتة عند التمرير */
+  color: var(--text);
+  overflow-x: hidden;
+}
+  color:var(--text);
+  overflow-x:hidden;
+}
+
+a{
+  text-decoration:none;
+  color:inherit;
+}
+
+/* ===== NAVBAR ===== */
+header{
+  position:fixed;
+  top:0;
+  width:100%;
+  background:rgba(0,0,0,.8);
+  backdrop-filter:blur(10px);
+  z-index:1000;
+}
+
+.nav{
+  max-width:1200px;
+  margin:auto;
+  padding:15px 20px;
+  display:flex;
+  justify-content:space-between;
+  align-items:center;
+}
+
+.logo{
+  font-weight:700;
+  font-size:1.3rem;
+}
+
+.menu{
+  display:flex;
+  gap:25px;
+}
+
+.menu a{
+  font-size:.9rem;
+  color:var(--muted);
+  transition:.3s;
+}
+
+.menu a:hover{
+  color:var(--text);
+}
+
+.burger{
+  display:none;
+  font-size:1.6rem;
+  cursor:pointer;
+}
+
+/* ===== HERO ===== */
+.hero{
+  min-height:100vh;
+  display:flex;
+  align-items:center;
+  justify-content:center;
+  text-align:center;
+  padding:100px 20px;
+}
+
+.hero h1{
+  font-size:clamp(2.5rem,5vw,4rem);
+  font-weight:700;
+}
+
+.hero p{
+  margin:20px auto;
+  max-width:600px;
+  color:var(--muted);
+}
+
+.buttons{
+  margin-top:30px;
+  display:flex;
+  justify-content:center;
+  gap:20px;
+  flex-wrap:wrap;
+}
+
+.btn{
+  padding:12px 30px;
+  border-radius:30px;
+  border:1px solid var(--text);
+  background:transparent;
+  color:var(--text);
+  cursor:pointer;
+  transition:.3s;
+}
+
+.btn.primary{
+  background:var(--text);
+  color:var(--bg);
+}
+
+.btn:hover{
+  transform:translateY(-3px);
+}
+
+/* ===== SECTIONS ===== */
+section{
+  padding:80px 20px;
+  max-width:1200px;
+  margin:auto;
+}
+
+.section-title{
+  text-align:center;
+  margin-bottom:50px;
+}
+
+.section-title h2{
+  font-size:2rem;
+  margin-bottom:10px;
+}
+
+.section-title p{
+  color:var(--muted);
+  font-size:.9rem;
+}
+
+/* ===== CARDS ===== */
+.grid{
+  display:grid;
+  grid-template-columns:repeat(auto-fit,minmax(250px,1fr));
+  gap:25px;
+}
+
+.card{
+  background:var(--card);
+  padding:30px;
+  border-radius:20px;
+  transition:.3s;
+}
+
+.card:hover{
+  transform:translateY(-8px);
+  color: black;
+  background-color: white;
+}
+
+.card h3{
+  margin-bottom:10px;
+}
+
+.card p{
+  font-size:.9rem;
+  color:var(--muted);
+}
+
+/* ===== STATS ===== */
+.stats{
+  display:grid;
+  grid-template-columns:repeat(auto-fit,minmax(200px,1fr));
+  gap:30px;
+  text-align:center;
+}
+
+.stat h3{
+  font-size:2.5rem;
+}
+
+.stat p{
+  color:var(--muted);
+}
+
+/* ===== CTA ===== */
+.cta{
+  text-align:center;
+  border:1px solid var(--text);
+  border-radius:30px;
+  padding:60px 20px;
+}
+
+/* ===== FOOTER ===== */
+footer{
+  padding:30px 20px;
+  text-align:center;
+  color:var(--muted);
+  font-size:.8rem;
+}
+
+/* ===== RESPONSIVE ===== */
+@media(max-width:768px){
+  .menu{
+    position:absolute;
+    top:70px;
+    right:20px;
+    background:var(--card);
+    flex-direction:column;
+    padding:20px;
+    border-radius:20px;
+    display:none;
+  }
+  .menu.show{
+    display:flex;
+  }
+  .burger{
+    display:block;
+  }
+}
+</style>
+</head>
+
+<body>
+
+<header>
+  <div class="nav">
+    <div class="logo">SlowDeath</div>
+    <div class="burger" onclick="toggleMenu()">☰</div>
+    <nav class="menu" id="menu">
+      <a href="#">Home</a>
+      <a href="aboutus.html">About</a>
+      <a href="#">Services</a>
+      <a href="#">Projects</a>
+      <a href="#">Contact</a>
+    </nav>
+  </div>
+</header>
+
+<section class="hero">
+  <div>
+    <h1>SlowDeath Team</h1>
+    <p>
+      A professional technical team focused on web development,
+      cybersecurity, and advanced digital solutions.
+    </p>
+    <div class="buttons">
+      <button class="btn primary">Explore Projects</button>
+      <button class="btn">Join The Team</button>
+    </div>
+  </div>
+</section>
+
+<section>
+  <div class="section-title">
+    <h2>What We Do</h2>
+    <p>Our core expertise</p>
+  </div>
+
+  <div class="grid">
+    <div class="card">
+      <h3>Web Development</h3>
+      <p>Modern and scalable websites.</p>
+    </div>
+    <div class="card">
+      <h3>Cyber Security</h3>
+      <p>Security analysis and protection.</p>
+    </div>
+    <div class="card">
+      <h3>Tools & Scripts</h3>
+      <p>Custom-built technical tools.</p>
+    </div>
+    <div class="card">
+      <h3>Research</h3>
+      <p>Advanced technical research.</p>
+    </div>
+  </div>
+</section>
+
+<section>
+  <div class="stats">
+    <div class="stat">
+      <h3 data-count="25">0</h3>
+      <p>Projects</p>
+    </div>
+    <div class="stat">
+      <h3 data-count="10">0</h3>
+      <p>Members</p>
+    </div>
+    <div class="stat">
+      <h3 data-count="5">0</h3>
+      <p>Years Experience</p>
+    </div>
+  </div>
+</section>
+
+<section class="cta">
+  <h2>Ready to work with SlowDeath?</h2>
+  <br>
+  <button class="btn primary">Contact Us</button>
+</section>
+
+<footer>
+  © 2026 SlowDeath Team — All Rights Reserved
+</footer>
+
+<script>
+function toggleMenu(){
+  document.getElementById('menu').classList.toggle('show');
+}
+
+document.querySelectorAll('[data-count]').forEach(counter=>{
+  let target = +counter.dataset.count;
+  let current = 0;
+  let step = Math.ceil(target / 120);
+
+  let interval = setInterval(()=>{
+    current += step;
+    if(current >= target){
+      current = target;
+      clearInterval(interval);
+    }
+    counter.innerText = current;
+  },30);
+});
+</script>
+
+</body>
+</html>

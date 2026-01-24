@@ -1,0 +1,173 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<title>Projects - SlowDeath Team</title>
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+
+<link href="https://fonts.googleapis.com/css2?family=Poppins:wght@300;400;600;700&display=swap" rel="stylesheet">
+
+<style>
+:root{
+  --bg:#000;
+  --card:#111;
+  --text:#fff;
+  --muted:#999;
+  --accent:#00ff00;
+}
+
+*{margin:0;padding:0;box-sizing:border-box;font-family:'Poppins',sans-serif;}
+
+body{
+  background: url("bg.png");
+  background-size: cover; /* يجعل الصورة تغطي الشاشة بالكامل */
+  background-position: center;
+  background-attachment: fixed; /* يبقي الخلفية ثابتة عند التمرير;
+  color:var(--text);
+  overflow-x:hidden;
+}
+
+a{color:inherit;text-decoration:none;}
+
+/* ===== NAVBAR ===== */
+header{
+  position:fixed; top:0; width:100%;
+  background:rgba(0,0,0,0.8);
+  backdrop-filter:blur(10px);
+  z-index:1000;
+}
+.nav{
+  max-width:1200px;margin:auto;
+  padding:15px 20px;
+  display:flex; justify-content:space-between; align-items:center;
+}
+.logo{font-weight:700;font-size:1.5rem;}
+.menu{display:flex; gap:25px;}
+.menu a{color:var(--muted); transition:.3s;}
+.menu a:hover{color:var(--accent);}
+.burger{display:none;font-size:1.6rem;cursor:pointer;}
+
+/* ===== HERO ===== */
+.hero{
+  min-height:40vh;
+  display:flex; align-items:center; justify-content:center;
+  text-align:center; padding:100px 20px;
+}
+.hero h1{font-size:clamp(2.5rem,5vw,4rem); font-weight:700; color:var(--accent);}
+.hero p{margin:20px auto; max-width:700px; color:var(--muted); font-size:1rem;}
+
+/* ===== PROJECT GRID ===== */
+.grid{
+  display:grid;
+  grid-template-columns:repeat(auto-fit,minmax(250px,1fr));
+  gap:25px;
+  padding:50px 20px;
+}
+
+.project-card{
+  background:var(--card);
+  padding:25px;
+  border-radius:20px;
+  transition:all 0.5s ease;
+  opacity:0;
+  transform:translateY(40px);
+}
+.project-card.show{
+  opacity:1;
+  transform:translateY(0);
+  box-shadow:0 0 15px var(--accent);
+}
+.project-card img{
+  width:100%;
+  border-radius:15px;
+  margin-bottom:15px;
+}
+.project-card h3{margin-bottom:10px;}
+.project-card p{color:var(--muted); font-size:.9rem;}
+
+/* ===== FOOTER ===== */
+footer{
+  padding:30px 20px; text-align:center;
+  color:var(--muted); font-size:.8rem;
+}
+
+/* ===== RESPONSIVE ===== */
+@media(max-width:768px){
+  .menu{
+    position:absolute; top:70px; right:20px;
+    background:var(--card);
+    flex-direction:column; padding:20px;
+    border-radius:20px; display:none;
+  }
+  .menu.show{display:flex;}
+  .burger{display:block;}
+}
+</style>
+</head>
+
+<body>
+
+<header>
+  <div class="nav">
+    <div class="logo">SlowDeath</div>
+    <div class="burger" onclick="toggleMenu()">☰</div>
+    <nav class="menu" id="menu">
+      <a href="index.html">Home</a>
+      <a href="about.html">About</a>
+      <a href="services.html">Services</a>
+      <a href="projects.html">Projects</a>
+      <a href="contact.html">Contact</a>
+    </nav>
+  </div>
+</header>
+
+<section class="hero">
+  <div>
+    <h1>Our Projects</h1>
+    <p>Take a look at the amazing projects developed by SlowDeath Team.</p>
+  </div>
+</section>
+
+<section class="grid" id="projectsGrid">
+  <!-- Projects will be loaded here dynamically -->
+</section>
+
+<footer>
+  © 2026 SlowDeath Team — All Rights Reserved
+</footer>
+
+<script>
+function toggleMenu(){
+  document.getElementById('menu').classList.toggle('show');
+}
+
+// ===== Load projects from server =====
+async function loadProjects(){
+  const res = await fetch('/api/projects');
+  const projects = await res.json();
+  const grid = document.getElementById('projectsGrid');
+  grid.innerHTML = '';
+  projects.forEach(proj => {
+    const div = document.createElement('div');
+    div.className='project-card';
+    div.innerHTML=`
+      <img src="images/${proj.image}" alt="${proj.title}">
+      <h3>${proj.title}</h3>
+      <p>${proj.description}</p>
+    `;
+    grid.appendChild(div);
+    setTimeout(()=>div.classList.add('show'),100); // animation
+  });
+}
+
+window.addEventListener('load', loadProjects);
+window.addEventListener('scroll',()=>{
+  document.querySelectorAll('.project-card').forEach(card=>{
+    const pos = card.getBoundingClientRect().top;
+    if(pos < window.innerHeight - 100) card.classList.add('show');
+  });
+});
+</script>
+
+</body>
+</html>

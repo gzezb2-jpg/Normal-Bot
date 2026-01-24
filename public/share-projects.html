@@ -1,0 +1,50 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<title>Share Project - SlowDeath Team</title>
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<link href="https://fonts.googleapis.com/css2?family=Poppins:wght@300;400;600;700&display=swap" rel="stylesheet">
+<style>
+body{background:#000;color:#fff;font-family:'Poppins',sans-serif;display:flex;justify-content:center;align-items:center;height:100vh;overflow:hidden;}
+form{background:#111;padding:30px;border-radius:20px;width:100%;max-width:400px;}
+input, textarea{width:100%;margin:10px 0;padding:10px;border-radius:10px;border:none;}
+button{padding:12px 20px;border-radius:20px;border:none;background:#0f0;color:#000;font-weight:700;cursor:pointer;}
+</style>
+</head>
+<body>
+
+<form id="projectForm">
+  <h2>Share a Project</h2>
+  <input type="text" id="title" placeholder="Project Title" required>
+  <input type="text" id="image" placeholder="Image filename (in /images/)" required>
+  <textarea id="description" placeholder="Project Description" rows="4" required></textarea>
+  <button type="submit">Submit Project</button>
+</form>
+
+<script>
+const form = document.getElementById('projectForm');
+
+form.addEventListener('submit', async (e)=>{
+  e.preventDefault();
+
+  const data = {
+    title: document.getElementById('title').value,
+    image: document.getElementById('image').value,
+    description: document.getElementById('description').value
+  };
+
+  const res = await fetch('/api/projects', {
+    method:'POST',
+    headers:{'Content-Type':'application/json'},
+    body: JSON.stringify(data)
+  });
+
+  const result = await res.json();
+  alert(result.message || result.error);
+  form.reset();
+});
+</script>
+
+</body>
+</html>
