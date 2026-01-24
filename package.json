@@ -1,0 +1,16 @@
+{
+  "name": "slowdeath-team",
+  "version": "1.0.0",
+  "description": "SlowDeath Team Web Project - Node.js Server",
+  "main": "server.js",
+  "scripts": {
+    "start": "node server.js"
+  },
+  "keywords": ["slowdeath","team","projects","nodejs","express"],
+  "author": "SlowDeath Team",
+  "license": "MIT",
+  "dependencies": {
+    "express": "^4.18.2",
+    "body-parser": "^1.20.2"
+  }
+}
