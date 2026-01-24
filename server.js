@@ -7,8 +7,8 @@ const app = express();
 const PORT = 3000;
 
 /* ===== JSON BIN CONFIG ===== */
-const BIN_ID = "PUT_YOUR_BIN_ID_HERE";
-const API_KEY = "PUT_YOUR_API_KEY_HERE";
+const BIN_ID = "69751a9bae596e708ff2f2ca";
+const API_KEY = "$2a$10$j9lzn5tqhuvLqZI8dYLwCesE/7r7eLZyms3h6b9U1RfPDsDeB21e2";
 const BIN_URL = `https://api.jsonbin.io/v3/b/${BIN_ID}`;
 
 /* ===== MIDDLEWARE ===== */
