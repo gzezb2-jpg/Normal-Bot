@@ -1,49 +1,126 @@
 <!DOCTYPE html>
 <html lang="en">
 <head>
-<meta charset="UTF-8">
-<title>Share Project - SlowDeath Team</title>
-<meta name="viewport" content="width=device-width, initial-scale=1.0">
-<link href="https://fonts.googleapis.com/css2?family=Poppins:wght@300;400;600;700&display=swap" rel="stylesheet">
-<style>
-body{background:#000;color:#fff;font-family:'Poppins',sans-serif;display:flex;justify-content:center;align-items:center;height:100vh;overflow:hidden;}
-form{background:#111;padding:30px;border-radius:20px;width:100%;max-width:400px;}
-input, textarea{width:100%;margin:10px 0;padding:10px;border-radius:10px;border:none;}
-button{padding:12px 20px;border-radius:20px;border:none;background:#0f0;color:#000;font-weight:700;cursor:pointer;}
-</style>
+  <meta charset="UTF-8">
+  <title>SlowDeath | Manage Projects</title>
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+
+  <style>
+    body {
+      margin: 0;
+      font-family: Arial, sans-serif;
+      background: url("bg.png");
+  background-size: cover; /* يجعل الصورة تغطي الشاشة بالكامل */
+  background-position: center;
+  background-attachment: fixed; /* يبقي الخلفية ثابتة عند التمرير*/
+      color: #fff;
+      padding: 40px;
+    }
+
+    h1 {
+      letter-spacing: 4px;
+    }
+
+    input, textarea, button {
+      width: 100%;
+      padding: 10px;
+      margin: 10px 0;
+      background: #111;
+      border: 1px solid #333;
+      color: #fff;
+    }
+
+    button {
+      cursor: pointer;
+      transition: background 0.3s;
+    }
+
+    button:hover {
+      background: #fff;
+      color: #000;
+    }
+
+    .project {
+      border: 1px solid #222;
+      padding: 15px;
+      margin-top: 20px;
+    }
+
+    .actions {
+      display: flex;
+      gap: 10px;
+    }
+  </style>
 </head>
 <body>
 
-<form id="projectForm">
-  <h2>Share a Project</h2>
-  <input type="text" id="title" placeholder="Project Title" required>
-  <input type="text" id="image" placeholder="Image filename (in /images/)" required>
-  <textarea id="description" placeholder="Project Description" rows="4" required></textarea>
-  <button type="submit">Submit Project</button>
-</form>
+<h1>MANAGE PROJECTS</h1>
+
+<input id="title" placeholder="Project title">
+<textarea id="desc" placeholder="Project description"></textarea>
+<input id="link" placeholder="Project link (optional)">
+<button onclick="addProject()">Add Project</button>
+
+<div id="list"></div>
 
 <script>
-const form = document.getElementById('projectForm');
+let projects = [];
 
-form.addEventListener('submit', async (e)=>{
-  e.preventDefault();
+async function load() {
+  const res = await fetch("/api/projects");
+  projects = await res.json();
+  render();
+}
 
-  const data = {
-    title: document.getElementById('title').value,
-    image: document.getElementById('image').value,
-    description: document.getElementById('description').value
-  };
+function render() {
+  const list = document.getElementById("list");
+  list.innerHTML = "";
+  projects.forEach(p => {
+    list.innerHTML += `
+      <div class="project">
+        <b>${p.title}</b>
+        <p>${p.description}</p>
+        <div class="actions">
+          <button onclick="removeProject(${p.id})">Delete</button>
+        </div>
+      </div>
+    `;
+  });
+}
 
-  const res = await fetch('/api/projects', {
-    method:'POST',
-    headers:{'Content-Type':'application/json'},
-    body: JSON.stringify(data)
+async function save() {
+  await fetch("/api/projects/save", {
+    method: "POST",
+    headers: {"Content-Type":"application/json"},
+    body: JSON.stringify(projects)
+  });
+}
+
+function addProject() {
+  const title = document.getElementById("title").value;
+  const desc = document.getElementById("desc").value;
+  const link = document.getElementById("link").value;
+
+  if (!title || !desc) return alert("Fill all fields");
+
+  projects.push({
+    id: Date.now(),
+    title,
+    description: desc,
+    link
   });
 
-  const result = await res.json();
-  alert(result.message || result.error);
-  form.reset();
-});
+  save();
+  load();
+}
+
+function removeProject(id) {
+  projects = projects.filter(p => p.id !== id);
+  save();
+  load();
+}
+
+load();
 </script>
 
 </body>
