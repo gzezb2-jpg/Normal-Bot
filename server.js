@@ -8,8 +8,8 @@ const fetch = require('node-fetch');
 // ====== إعدادات النظام ======
 const CONFIG = {
   // Pterodactyl
-  PTERODACTYL_URL: 'https://your-panel.belvohost.com', // ← غيّره لرابط لوحة تحكمك
-  PTERODACTYL_API_KEY: 'ptl_your_actual_api_key_here', // ← ضع مفتاحك الحقيقي هنا
+  PTERODACTYL_URL: 'https://nexus.arenahosting.top/', // ← غيّره لرابط لوحة تحكمك
+  PTERODACTYL_API_KEY: 'ptla_2i789jDkUPypUkx6cpf55Ayw4vCBm4P5Xylc9u59mPT', // ← ضع مفتاحك الحقيقي هنا
 
   // JSONBin
   JSONBIN_API_KEY: '$2a$10$j9lzn5tqhuvLqZI8dYLwCesE/7r7eLZyms3h6b9U1RfPDsDeB21e2', // ← من JSONBin > Settings > API Keys
