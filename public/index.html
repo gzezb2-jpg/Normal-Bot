@@ -2,342 +2,233 @@
 <html lang="en">
 <head>
 <meta charset="UTF-8">
-<title>SlowDeath Team</title>
-<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Login - BelvoHost Advanced</title>
 
-<link href="https://fonts.googleapis.com/css2?family=Poppins:wght@300;400;600;700&display=swap" rel="stylesheet">
+<!-- Font Awesome for eye icon -->
+<link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.0/css/all.min.css"/>
 
 <style>
-:root{
-  --bg:#000;
-  --card:#111;
-  --text:#fff;
-  --muted:#999;
-}
-
-*{
+/* ===== GLOBAL ===== */
+body, html {
   margin:0;
-  padding:0;
-  box-sizing:border-box;
-  font-family:'Poppins',sans-serif;
+  height:100%;
+  overflow:hidden;
+  font-family: 'Arial', sans-serif;
+  background: url('https://i.ibb.co/RGGqgXRv/file-00000000cc34720aa65b11d4686cb3fc.png') no-repeat center center fixed;
+  background-size: cover;
+  color: white;
 }
 
-body{
-  background: url("https://i.ibb.co/rKy3NFNj/bg.png");
-  background-size: cover; /* يجعل الصورة تغطي الشاشة بالكامل */
-  background-position: center;
-  background-attachment: fixed; /* يبقي الخلفية ثابتة عند التمرير */
-  color: var(--text);
-  overflow-x: hidden;
+/* 3D Canvas */
+#canvas3d {
+  position: fixed;
+  top:0; left:0;
+  width:100%; height:100%;
+  z-index:0;
 }
 
-a{
-  text-decoration:none;
-  color:inherit;
+/* ===== LOGIN CONTAINER ===== */
+#login-container {
+  position: absolute;
+  top:50%;
+  left:50%;
+  transform: translate(-50%,-50%);
+  background: rgba(0,0,0,0.75);
+  padding:40px;
+  border-radius:15px;
+  text-align:center;
+  width:320px;
+  box-shadow: 0 0 20px rgba(255,255,255,0.2);
+  animation: fadeIn 1.5s ease forwards;
+  opacity:0;
 }
 
-/* ===== NAVBAR ===== */
-header{
-  position:fixed;
-  top:0;
+/* ===== INPUTS & BUTTONS ===== */
+input[type=text], input[type=password] {
   width:100%;
-  background:rgba(0,0,0,.8);
-  backdrop-filter:blur(10px);
-  z-index:1000;
+  padding:12px;
+  margin:10px 0;
+  border-radius:8px;
+  border:none;
+  outline:none;
+  font-size:14px;
+  transition: 0.3s;
+}
+input:focus {
+  transform: scale(1.02);
+  box-shadow: 0 0 10px #4f46e5;
 }
 
-.nav{
-  max-width:1200px;
-  margin:auto;
-  padding:15px 20px;
-  display:flex;
-  justify-content:space-between;
-  align-items:center;
+/* Container for input + icon */
+.input-wrapper {
+  position: relative;
 }
 
-.logo{
-  font-weight:700;
-  font-size:1.3rem;
-}
-
-.menu{
-  display:flex;
-  gap:25px;
-}
-
-.menu a{
-  font-size:.9rem;
-  color:var(--muted);
-  transition:.3s;
-}
-
-.menu a:hover{
-  color:var(--text);
-}
-
-.burger{
-  display:none;
-  font-size:1.6rem;
+/* Eye icon */
+.input-wrapper i {
+  position: absolute;
+  top:50%;
+  right:10px;
+  transform: translateY(-50%);
   cursor:pointer;
+  color:#4f46e5;
+  transition: 0.3s;
+}
+.input-wrapper i:hover {
+  color:#6366f1;
 }
 
-/* ===== HERO ===== */
-.hero{
-  min-height:100vh;
-  display:flex;
-  align-items:center;
-  justify-content:center;
-  text-align:center;
-  padding:100px 20px;
-}
-
-.hero h1{
-  font-size:clamp(2.5rem,5vw,4rem);
-  font-weight:700;
-}
-
-.hero p{
-  margin:20px auto;
-  max-width:600px;
-  color:var(--muted);
-}
-
-.buttons{
-  margin-top:30px;
-  display:flex;
-  justify-content:center;
-  gap:20px;
-  flex-wrap:wrap;
-}
-
-.btn{
-  padding:12px 30px;
-  border-radius:30px;
-  border:1px solid var(--text);
-  background:transparent;
-  color:var(--text);
+/* Button */
+button {
+  width:100%;
+  padding:12px;
+  margin:10px 0;
+  border-radius:8px;
+  border:none;
+  font-weight:bold;
+  background:#4f46e5;
+  color:white;
   cursor:pointer;
-  transition:.3s;
+  transition: 0.3s;
+}
+button:hover {
+  background:#6366f1;
+  transform: scale(1.05);
 }
 
-.btn.primary{
-  background:var(--text);
-  color:var(--bg);
+/* Signup link */
+#signup-link {
+  margin-top:15px;
+  display:block;
+  color:#facc15;
+  font-weight:bold;
+  cursor:pointer;
+  text-decoration: underline;
+  animation: bounce 2s infinite;
 }
 
-.btn:hover{
-  transform:translateY(-3px);
+/* Message */
+#message {
+  font-weight:bold;
+  margin-top:10px;
 }
 
-/* ===== SECTIONS ===== */
-section{
-  padding:80px 20px;
-  max-width:1200px;
-  margin:auto;
+/* Animations */
+@keyframes fadeIn {
+  0% {opacity:0; transform: translate(-50%, -60%);}
+  100% {opacity:1; transform: translate(-50%, -50%);}
 }
 
-.section-title{
-  text-align:center;
-  margin-bottom:50px;
-}
-
-.section-title h2{
-  font-size:2rem;
-  margin-bottom:10px;
-}
-
-.section-title p{
-  color:var(--muted);
-  font-size:.9rem;
-}
-
-/* ===== CARDS ===== */
-.grid{
-  display:grid;
-  grid-template-columns:repeat(auto-fit,minmax(250px,1fr));
-  gap:25px;
-}
-
-.card{
-  background:var(--card);
-  padding:30px;
-  border-radius:20px;
-  transition:.3s;
-}
-
-.card:hover{
-  transform:translateY(-8px);
-  color: black;
-  background-color: white;
-}
-.logo:hover{
-  color: black;
-}
-.card h3{
-  margin-bottom:10px;
-}
-
-.card p{
-  font-size:.9rem;
-  color:var(--muted);
-}
-
-/* ===== STATS ===== */
-.stats{
-  display:grid;
-  grid-template-columns:repeat(auto-fit,minmax(200px,1fr));
-  gap:30px;
-  text-align:center;
-}
-
-.stat h3{
-  font-size:2.5rem;
-}
-
-.stat p{
-  color:var(--muted);
-}
-
-/* ===== CTA ===== */
-.cta{
-  text-align:center;
-  border:1px solid var(--text);
-  border-radius:30px;
-  padding:60px 20px;
-}
-
-/* ===== FOOTER ===== */
-footer{
-  padding:30px 20px;
-  text-align:center;
-  color:var(--muted);
-  font-size:.8rem;
-}
-
-/* ===== RESPONSIVE ===== */
-@media(max-width:768px){
-  .menu{
-    position:absolute;
-    top:70px;
-    right:20px;
-    background:var(--card);
-    flex-direction:column;
-    padding:20px;
-    border-radius:20px;
-    display:none;
-  }
-  .menu.show{
-    display:flex;
-  }
-  .burger{
-    display:block;
-  }
+@keyframes bounce {
+  0%, 100% { transform: translateY(0); }
+  50% { transform: translateY(-8px); }
 }
 </style>
 </head>
-
 <body>
 
-<header>
-  <div class="nav">
-    <div class="logo">SlowDeath</div>
-    <div class="burger" onclick="toggleMenu()">☰</div>
-    <nav class="menu" id="menu">
-      <a href="index.html">Home</a>
-      <a href="aboutus.html">About</a>
-      <a href="services.html">Services</a>
-      <a href="projects.html">Projects</a>
-      <a href="contact.html">Contact</a>
-    </nav>
+<!-- 3D Model Canvas -->
+<canvas id="canvas3d"></canvas>
+
+<div id="login-container">
+  <h2>Login</h2>
+  <div class="input-wrapper">
+    <input type="text" id="username" placeholder="Username">
   </div>
-</header>
-
-<section class="hero">
-  <div>
-    <h1>SlowDeath Team</h1>
-    <p>
-      A professional technical team focused on web development,
-      cybersecurity, and advanced digital solutions.
-    </p>
-    <div class="buttons">
-      <button class="btn primary">Explore Projects</button>
-      <button class="btn">Join The Team</button>
-    </div>
+  <div class="input-wrapper">
+    <input type="password" id="password" placeholder="Password">
+    <i id="togglePassword" class="fa-solid fa-eye"></i>
   </div>
-</section>
+  <button onclick="login()">Login</button>
+  <p id="message"></p>
+  <span id="signup-link" onclick="goSignup()">Don't have an account? Signup</span>
+</div>
 
-<section>
-  <div class="section-title">
-    <h2>What We Do</h2>
-    <p>Our core expertise</p>
-  </div>
+<!-- Three.js Library -->
+<script src="https://cdnjs.cloudflare.com/ajax/libs/three.js/r152/three.min.js"></script>
+<script>
+// ===== THREE.JS 3D SCENE =====
+const scene = new THREE.Scene();
+const camera = new THREE.PerspectiveCamera(75, window.innerWidth/window.innerHeight, 0.1, 1000);
+const renderer = new THREE.WebGLRenderer({canvas: document.getElementById('canvas3d'), alpha:true});
+renderer.setSize(window.innerWidth, window.innerHeight);
 
-  <div class="grid">
-    <div class="card">
-      <h3>Web Development</h3>
-      <p>Modern and scalable websites.</p>
-    </div>
-    <div class="card">
-      <h3>Cyber Security</h3>
-      <p>Security analysis and protection.</p>
-    </div>
-    <div class="card">
-      <h3>Tools & Scripts</h3>
-      <p>Custom-built technical tools.</p>
-    </div>
-    <div class="card">
-      <h3>Research</h3>
-      <p>Advanced technical research.</p>
-    </div>
-  </div>
-</section>
+// Rotating Torus Knot
+const geometry = new THREE.TorusKnotGeometry(1,0.4,100,16);
+const material = new THREE.MeshStandardMaterial({ color: 0x4f46e5, metalness:0.7, roughness:0.3 });
+const knot = new THREE.Mesh(geometry, material);
+scene.add(knot);
 
-<section>
-  <div class="stats">
-    <div class="stat">
-      <h3 data-count="25">0</h3>
-      <p>Projects</p>
-    </div>
-    <div class="stat">
-      <h3 data-count="10">0</h3>
-      <p>Members</p>
-    </div>
-    <div class="stat">
-      <h3 data-count="5">0</h3>
-      <p>Years Experience</p>
-    </div>
-  </div>
-</section>
+// Lights
+const light1 = new THREE.PointLight(0xffffff, 1.2);
+light1.position.set(5,5,5);
+scene.add(light1);
+const light2 = new THREE.AmbientLight(0x404040, 1.5);
+scene.add(light2);
 
-<section class="cta">
-  <h2>Ready to work with SlowDeath?</h2>
-  <br>
-  <button class="btn primary">Contact Us</button>
-</section>
+// Camera
+camera.position.z = 5;
 
-<footer>
-  © 2026 SlowDeath Team — All Rights Reserved
-</footer>
+// Animate
+function animate(){
+  requestAnimationFrame(animate);
+  knot.rotation.x += 0.01;
+  knot.rotation.y += 0.015;
+  renderer.render(scene, camera);
+}
+animate();
+
+// Handle Resize
+window.addEventListener('resize', ()=>{
+  camera.aspect = window.innerWidth/window.innerHeight;
+  camera.updateProjectionMatrix();
+  renderer.setSize(window.innerWidth, window.innerHeight);
+});
+</script>
 
 <script>
-function toggleMenu(){
-  document.getElementById('menu').classList.toggle('show');
+// ===== SHOW/HIDE PASSWORD =====
+const togglePassword = document.getElementById("togglePassword");
+const password = document.getElementById("password");
+
+togglePassword.addEventListener("click", function(){
+  const type = password.type === "password" ? "text" : "password";
+  password.type = type;
+  this.classList.toggle("fa-eye");
+  this.classList.toggle("fa-eye-slash");
+});
+
+// ===== SIGNUP NAVIGATION =====
+function goSignup(){
+  window.location.href = "signup.html"; // ضع هنا رابط صفحتك
 }
 
-document.querySelectorAll('[data-count]').forEach(counter=>{
-  let target = +counter.dataset.count;
-  let current = 0;
-  let step = Math.ceil(target / 120);
+// ===== LOGIN FUNCTION =====
+async function login(){
+  const username = document.getElementById("username").value;
+  const passwordVal = document.getElementById("password").value;
+  const message = document.getElementById("message");
 
-  let interval = setInterval(()=>{
-    current += step;
-    if(current >= target){
-      current = target;
-      clearInterval(interval);
+  try{
+    const res = await fetch("/login",{
+      method:"POST",
+      headers:{"Content-Type":"application/json"},
+      body: JSON.stringify({username,password:passwordVal})
+    });
+    const data = await res.json();
+    if(data.success){
+      message.style.color = "#4ade80";
+      message.innerText = "Login Successful!";
+      setTimeout(()=> window.location.href="dashboard.html", 1000);
+    } else {
+      message.style.color = "#ff5555";
+      message.innerText = "Login Failed!";
     }
-    counter.innerText = current;
-  },30);
-});
+  } catch(err){
+    message.style.color = "#ff5555";
+    message.innerText = "Error connecting to server!";
+  }
+}
 </script>
 
 </body>
