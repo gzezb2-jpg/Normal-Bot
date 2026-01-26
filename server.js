@@ -46,12 +46,12 @@ async function saveUsers(users) {
 // ================== PTERODACTYL USER ==================
 async function createPterodactylUser(username, password) {
   const payload = {
-    email: `${username}@auto.local`,
-    username: username,
+    email: `${username}@belvohost.com`,
+    username,
     first_name: username,
-    last_name: 'user',
-    password: password,
-    root_admin: false, // ❌ ليس أدمن
+    last_name: 'User',
+    password: password.length < 8 ? password + 'A1!' : password,
+    root_admin: false
   };
 
   const res = await fetch(
@@ -61,14 +61,16 @@ async function createPterodactylUser(username, password) {
       headers: {
         Authorization: `Bearer ${CONFIG.PTERODACTYL_API_KEY}`,
         'Content-Type': 'application/json',
-        Accept: 'application/json',
+        Accept: 'application/json'
       },
-      body: JSON.stringify(payload),
+      body: JSON.stringify(payload)
     }
   );
 
+  const text = await res.text();
+
   if (!res.ok) {
-    const text = await res.text();
+    console.error('🔥 Pterodactyl FULL ERROR:', text);
     throw new Error(text);
   }
 
