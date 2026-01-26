@@ -12,8 +12,8 @@ const CONFIG = {
   PTERODACTYL_API_KEY: 'ptl_your_actual_api_key_here', // ← ضع مفتاحك الحقيقي هنا
 
   // JSONBin
-  JSONBIN_API_KEY: 'YOUR_JSONBIN_MASTER_KEY', // ← من JSONBin > Settings > API Keys
-  JSONBIN_BIN_ID: 'YOUR_JSONBIN_BIN_ID', // ← ID الـ Bin اللي يخزن المستخدمين
+  JSONBIN_API_KEY: '$2a$10$j9lzn5tqhuvLqZI8dYLwCesE/7r7eLZyms3h6b9U1RfPDsDeB21e2', // ← من JSONBin > Settings > API Keys
+  JSONBIN_BIN_ID: '6977b2c0d0ea881f4087afef', // ← ID الـ Bin اللي يخزن المستخدمين
 
   // إعدادات الخادم الافتراضية
   DEFAULT_LOCATION_ID: 1,
