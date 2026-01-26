@@ -58,16 +58,51 @@
       letter-spacing: 1px;
     }
 
-    header nav a {
+    /* Desktop Nav */
+    .nav-links {
+      display: flex;
+      align-items: center;
+      gap: 20px;
+    }
+
+    .nav-links a{
       text-decoration: none;
       color: var(--text-light);
       font-weight: 600;
-      margin-left: 20px;
       transition: all 0.3s ease;
     }
 
-    header nav a:hover {
+    .nav-links a:hover {
       color: var(--primary-light);
+    }
+
+
+
+    /* Mobile Menu Toggle */
+    .menu-toggle {
+      display: none;
+      flex-direction: column;
+      cursor: pointer;
+      width: 30px;
+      height: 22px;
+      justify-content: space-between;
+    }
+
+    .menu-toggle span {
+      height: 3px;
+      width: 100%;      background: var(--text-light);
+      border-radius: 2px;
+      transition: 0.3s;
+    }
+
+    .menu-toggle.active span:nth-child(1) {
+      transform: rotate(45deg) translate(6px, 6px);
+    }
+    .menu-toggle.active span:nth-child(2) {
+      opacity: 0;
+    }
+    .menu-toggle.active span:nth-child(3) {
+      transform: rotate(-45deg) translate(6px, -6px);
     }
 
     /* Main Content */
@@ -96,15 +131,15 @@
     /* Plans Container */
     #plans-container {
       display: grid;
-      grid-template-columns: repeat(auto-fit, minmax(300px, 1fr));      gap: 30px;
+      grid-template-columns: repeat(auto-fit, minmax(300px, 1fr));
+      gap: 30px;
       margin-bottom: 80px;
     }
 
     .plan-card {
       background: var(--card-bg);
       border-radius: 20px;
-      padding: 30px;
-      text-align: center;
+      padding: 30px;      text-align: center;
       transition: all 0.4s ease;
       border: 1px solid rgba(255, 255, 255, 0.05);
       backdrop-filter: blur(5px);
@@ -145,15 +180,15 @@
     }
 
     .plan-features li i {
-      color: var(--success);      font-size: 1.1rem;
+      color: var(--success);
+      font-size: 1.1rem;
     }
 
     .order-btn {
       padding: 12px 28px;
       background: linear-gradient(135deg, var(--primary), var(--primary-light));
       color: white;
-      border: none;
-      border-radius: 12px;
+      border: none;      border-radius: 12px;
       font-weight: bold;
       cursor: pointer;
       transition: all 0.3s ease;
@@ -194,55 +229,65 @@
       display: flex;
       align-items: center;
       gap: 8px;
-      font-size: 1.05rem;    }
+      font-size: 1.05rem;
+    }
 
     .host-btn.bot { background: rgba(139, 92, 246, 0.2); color: var(--bot-color); }
     .host-btn.minecraft { background: rgba(59, 130, 246, 0.2); color: var(--mc-color); }
     .host-btn.samp { background: rgba(239, 68, 68, 0.2); color: var(--samp-color); }
 
     .host-btn.active {
-      transform: scale(1.05);
-      box-shadow: 0 6px 20px rgba(0, 0, 0, 0.4);
+      transform: scale(1.05);      box-shadow: 0 6px 20px rgba(0, 0, 0, 0.4);
     }
 
     .host-btn:hover:not(.active) {
       opacity: 0.9;
     }
-    
-    /* Mobile Menu Toggle */
-    .menu-toggle {
-      display: none;
-      flex-direction: column;
-      cursor: pointer;
-      width: 30px;
-      height: 22px;
-      justify-content: space-between;
-    }
-    .menu-toggle span {
-      height: 3px;
-      width: 100%;
-      background: var(--text-light);
-      border-radius: 2px;
-      transition: 0.3s;
-    }
-    
-    .menu-toggle {
-        display: flex;
-      }
-
-      .menu-toggle.active span:nth-child(1) {
-        transform: rotate(45deg) translate(6px, 6px);
-      }
-      .menu-toggle.active span:nth-child(2) {
-        opacity: 0;
-      }
-      .menu-toggle.active span:nth-child(3) {
-        transform: rotate(-45deg) translate(6px, -6px);
-      }
-
 
     /* Responsive */
     @media (max-width: 768px) {
+      .menu-toggle {
+        display: flex;
+      }
+
+      .nav-links {
+        position: absolute;
+        top: 70px;
+        left: 0;
+        width: 100%;
+        background: var(--dark-bg);
+        backdrop-filter: blur(10px);
+        flex-direction: column;
+        padding: 20px 0;
+        gap: 15px;
+        clip-path: polygon(0 0, 100% 0, 100% 0, 0 0);
+        transition: clip-path 0.4s ease-in-out;
+      }
+
+      .nav-links.active {
+        clip-path: polygon(0 0, 100% 0, 100% 100%, 0 100%);
+      }
+
+      .coins-btn {
+        display: flex;
+        align-items: center;
+        justify-content: center;
+        gap: 8px;
+        width: 140px;
+        margin: 0 auto;
+        background: rgba(79, 70, 229, 0.2);
+        padding: 10px;
+        border-radius: 10px;
+        color: var(--accent) !important;
+      }
+
+      header {
+        padding: 16px 20px;
+      }
+
+      main {
+        margin-top: 130px;      }
+
       .host-selector {
         flex-wrap: wrap;
         gap: 10px;
@@ -254,9 +299,6 @@
       }
       .section-title {
         font-size: 2rem;
-      }
-      main {
-        margin-top: 90px;
       }
     }
 
@@ -273,18 +315,18 @@
 <body>
 
 <!-- Header -->
-<header class="fadeIn">
+<header>
   <h1>BelvoHost</h1>
   <div class="menu-toggle" id="menuToggle">
     <span></span>
     <span></span>
     <span></span>
   </div>
-  <nav id="mainNav">
-    <a href="#hero">Home</a>
-    <a href="#plans">Plans</a>
-    <a href="#about">About Us</a>
-    <a href="#contact">Contact</a>
+  <nav id="mainNav" class="nav-links">
+    <a href="/">Home</a>
+    <a href="/plans">Plans</a>
+    <a href="/about">About Us</a>
+    <a href="/contact">Contact</a>
     <a href="/coins" class="coins-btn"><i class="fas fa-coins"></i> My Coins</a>
   </nav>
 </header>
@@ -293,7 +335,6 @@
 <main>
   <h1 class="section-title">Choose Your Perfect Plan</h1>
   <p class="section-subtitle">Select your hosting type below to view available plans</p>
-
   <div id="plans-container">
     <!-- سيتم ملؤه تلقائيًا بواسطة JavaScript -->
   </div>
@@ -331,7 +372,8 @@
         name: "Medium Plan",
         features: [
           "50 Player Slots",
-          "2GB RAM",          "3GB SSD Storage",
+          "2GB RAM",
+          "3GB SSD Storage",
           "1Gb/s Network",
           "×1 MySQL Database",
           "Europe Location"
@@ -342,8 +384,7 @@
         features: [
           "100 Player Slots (Max)",
           "4GB RAM",
-          "6GB SSD Storage",
-          "1Gb/s Network",
+          "6GB SSD Storage",          "1Gb/s Network",
           "×1 MySQL Database",
           "Europe Location"
         ]
@@ -380,7 +421,8 @@
           "5Gb Storage",
           "1Gb/s Network",
           "×1 MySQL Database",
-          "Europe Localisation"        ]
+          "Europe Localisation"
+        ]
       }
     ],
     bot: [
@@ -391,8 +433,7 @@
           "256Mb SSD Storage",
           "1Gb/s Network",
           "×1 MySQL Database"
-        ]
-      },
+        ]      },
       {
         name: "Medium Bots Plan",
         features: [
@@ -429,22 +470,19 @@
           ${plan.features.map(feat => `<li><i class="fas fa-check-circle"></i> ${feat}</li>`).join('')}
         </ul>
         <button class="order-btn">Order Now</button>
-      `;      container.appendChild(card);
+      `;
+      container.appendChild(card);
     });
   }
 
   // تبديل نوع الاستضافة
   document.querySelectorAll('.host-btn').forEach(btn => {
     btn.addEventListener('click', () => {
-      // إزالة active من الجميع
       document.querySelectorAll('.host-btn').forEach(b => b.classList.remove('active'));
-      // إضافة active للزر المضغوط
       btn.classList.add('active');
-      // عرض الخطط
       const type = btn.getAttribute('data-type');
       renderPlans(type);
-    });
-  });
+    });  });
 
   // تحميل أول مجموعة (Minecraft)
   document.addEventListener('DOMContentLoaded', () => {
@@ -457,22 +495,22 @@
   const menuToggle = document.getElementById('menuToggle');
   const nav = document.getElementById('mainNav');
 
-  menuToggle.addEventListener('click', () => {
-    nav.classList.toggle('active');
-    menuToggle.classList.toggle('active');
-  });
-
-  // Close menu when clicking a link (mobile)
-  document.querySelectorAll('#mainNav a').forEach(link => {
-    link.addEventListener('click', () => {
-      nav.classList.remove('active');
-      menuToggle.classList.remove('active');
+  if (menuToggle && nav) {
+    menuToggle.addEventListener('click', () => {
+      nav.classList.toggle('active');
+      menuToggle.classList.toggle('active');
     });
-  });
+
+    // Close menu when clicking any link
+    document.querySelectorAll('#mainNav a').forEach(link => {
+      link.addEventListener('click', () => {
+        nav.classList.remove('active');
+        menuToggle.classList.remove('active');
+      });
+    });
+  }
 </script>
 
 </body>
 </html>
-
-</body>
 </html>
