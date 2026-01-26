@@ -208,6 +208,38 @@
     .host-btn:hover:not(.active) {
       opacity: 0.9;
     }
+    
+    /* Mobile Menu Toggle */
+    .menu-toggle {
+      display: none;
+      flex-direction: column;
+      cursor: pointer;
+      width: 30px;
+      height: 22px;
+      justify-content: space-between;
+    }
+    .menu-toggle span {
+      height: 3px;
+      width: 100%;
+      background: var(--text-light);
+      border-radius: 2px;
+      transition: 0.3s;
+    }
+    
+    .menu-toggle {
+        display: flex;
+      }
+
+      .menu-toggle.active span:nth-child(1) {
+        transform: rotate(45deg) translate(6px, 6px);
+      }
+      .menu-toggle.active span:nth-child(2) {
+        opacity: 0;
+      }
+      .menu-toggle.active span:nth-child(3) {
+        transform: rotate(-45deg) translate(6px, -6px);
+      }
+
 
     /* Responsive */
     @media (max-width: 768px) {
@@ -241,12 +273,19 @@
 <body>
 
 <!-- Header -->
-<header>
+<header class="fadeIn">
   <h1>BelvoHost</h1>
-  <nav>    <a href="/">Home</a>
+  <div class="menu-toggle" id="menuToggle">
+    <span></span>
+    <span></span>
+    <span></span>
+  </div>
+  <nav id="mainNav">
+    <a href="#hero">Home</a>
     <a href="#plans">Plans</a>
-    <a href="/about">About</a>
-    <a href="/contact">Contact</a>
+    <a href="#about">About Us</a>
+    <a href="#contact">Contact</a>
+    <a href="/coins" class="coins-btn"><i class="fas fa-coins"></i> My Coins</a>
   </nav>
 </header>
 
@@ -412,6 +451,28 @@
     renderPlans('minecraft');
   });
 </script>
+
+<script>
+  // Mobile Menu Toggle
+  const menuToggle = document.getElementById('menuToggle');
+  const nav = document.getElementById('mainNav');
+
+  menuToggle.addEventListener('click', () => {
+    nav.classList.toggle('active');
+    menuToggle.classList.toggle('active');
+  });
+
+  // Close menu when clicking a link (mobile)
+  document.querySelectorAll('#mainNav a').forEach(link => {
+    link.addEventListener('click', () => {
+      nav.classList.remove('active');
+      menuToggle.classList.remove('active');
+    });
+  });
+</script>
+
+</body>
+</html>
 
 </body>
 </html>
