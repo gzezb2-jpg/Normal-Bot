@@ -1,28 +1,23 @@
 // server.js
 const server = require('server');
 const { get, post } = server.router;
-const { render, json } = server.reply;
+const { render, json, status } = server.reply;
 const path = require('path');
 const fetch = require('node-fetch');
+const bodyParser = require('body-parser');
 
-// ====== إعدادات النظام ======
+// ===== CONFIG =====
 const CONFIG = {
   // Pterodactyl
-  PTERODACTYL_URL: 'https://nexus.arenahosting.top/', // ← غيّره لرابط لوحة تحكمك
-  PTERODACTYL_API_KEY: 'ptla_2i789jDkUPypUkx6cpf55Ayw4vCBm4P5Xylc9u59mPT', // ← ضع مفتاحك الحقيقي هنا
+  PTERODACTYL_URL: 'https://nexus.arenahosting.top/', // رابط لوحة تحكمك
+  PTERODACTYL_API_KEY: 'ptla_2i789jDkUPypUkx6cpf55Ayw4vCBm4P5Xylc9u59mPT',
 
   // JSONBin
-  JSONBIN_API_KEY: '$2a$10$j9lzn5tqhuvLqZI8dYLwCesE/7r7eLZyms3h6b9U1RfPDsDeB21e2', // ← من JSONBin > Settings > API Keys
-  JSONBIN_BIN_ID: '6977b2c0d0ea881f4087afef', // ← ID الـ Bin اللي يخزن المستخدمين
-
-  // إعدادات الخادم الافتراضية
-  DEFAULT_LOCATION_ID: 1,
-  DEFAULT_EGG_ID: 1, // مثلاً: Minecraft Egg
-  DEFAULT_DOCKER_IMAGE: 'ghcr.io/pterodactyl/yolks:java_17',
-  DEFAULT_STARTUP: 'java -Xms128M -Xmx{{SERVER_MEMORY}}M -jar server.jar',
+  JSONBIN_API_KEY: '$2a$10$j9lzn5tqhuvLqZI8dYLwCesE/7r7eLZyms3h6b9U1RfPDsDeB21e2',
+  JSONBIN_BIN_ID: '6977b2c0d0ea881f4087afef',
 };
 
-// ====== دالة: جلب المستخدمين من JSONBin ======
+// ===== Helpers =====
 async function fetchUsersFromJsonBin() {
   try {
     const res = await fetch(`https://api.jsonbin.io/v3/b/${CONFIG.JSONBIN_BIN_ID}`, {
@@ -30,14 +25,13 @@ async function fetchUsersFromJsonBin() {
     });
     if (!res.ok) throw new Error('Failed to fetch users');
     const data = await res.json();
-    return data.record.users || [];
+    return data.record?.users || [];
   } catch (err) {
     console.error('❌ JSONBin Fetch Error:', err.message);
     return [];
   }
 }
 
-// ====== دالة: حفظ المستخدمين في JSONBin ======
 async function saveUsersToJsonBin(users) {
   try {
     const res = await fetch(`https://api.jsonbin.io/v3/b/${CONFIG.JSONBIN_BIN_ID}`, {
@@ -47,7 +41,8 @@ async function saveUsersToJsonBin(users) {
         'X-Master-Key': CONFIG.JSONBIN_API_KEY,
         'X-Bin-Private': 'false'
       },
-      body: JSON.stringify({ users })    });
+      body: JSON.stringify({ users })
+    });
     return res.ok;
   } catch (err) {
     console.error('❌ JSONBin Save Error:', err.message);
@@ -55,39 +50,20 @@ async function saveUsersToJsonBin(users) {
   }
 }
 
-// ====== دالة: إنشاء خادم في Pterodactyl ======
-async function createPterodactylServer(username) {
+// ===== Create User in Pterodactyl =====
+async function createPterodactylUser(username, password, email) {
   try {
     const payload = {
-      name: `Server-${username}`,
-      user: 1, // ← يمكنك لاحقًا ربطه بمستخدم حقيقي في Pterodactyl
-      egg: CONFIG.DEFAULT_EGG_ID,
-      docker_image: CONFIG.DEFAULT_DOCKER_IMAGE,
-      startup: CONFIG.DEFAULT_STARTUP,
-      environment: {
-        SERVER_JARFILE: 'server.jar',
-        MC_VERSION: '1.20.1'
-      },
-      limits: {
-        memory: 1024,
-        swap: 0,
-        disk: 2048,
-        io: 500,
-        cpu: 100
-      },
-      feature_limits: {
-        databases: 1,
-        allocations: 1,
-        backups: 2
-      },
-      deploy: {
-        locations: [CONFIG.DEFAULT_LOCATION_ID],
-        dedicated_ip: false,
-        port_range: []
-      }
+      username: username,
+      first_name: username,
+      last_name: 'User',
+      email: email,
+      password: password,
+      root_admin: false,
+      language: "en"
     };
 
-    const res = await fetch(`${CONFIG.PTERODACTYL_URL}/api/application/servers`, {
+    const res = await fetch(`${CONFIG.PTERODACTYL_URL}/api/application/users`, {
       method: 'POST',
       headers: {
         'Authorization': `Bearer ${CONFIG.PTERODACTYL_API_KEY}`,
@@ -96,78 +72,93 @@ async function createPterodactylServer(username) {
       },
       body: JSON.stringify(payload)
     });
+
     if (!res.ok) {
       const text = await res.text();
-      throw new Error(`Pterodactyl API: ${text}`);
+      console.warn(`⚠️ User created in JSONBin but failed in Pterodactyl: ${text}`);
+      return false;
     }
 
-    const result = await res.json();
-    console.log(`✅ Server created for ${username} | ID:`, result.attributes.id);
+    console.log(`✅ User ${username} created in Pterodactyl`);
     return true;
   } catch (err) {
-    console.error('❌ Pterodactyl Error:', err.message);
+    console.error('❌ Pterodactyl User Creation Error:', err.message);
     return false;
   }
 }
 
-// ====== ROUTES ======
-
+// ===== SERVER =====
 server(
-  // خدمة ملفات HTML من مجلد public
+  bodyParser.json(), // parse JSON POST requests
+
+  // ===== ROUTES =====
   get('/', ctx => render(path.join(__dirname, 'public', 'home.html'))),
   get('/plans', ctx => render(path.join(__dirname, 'public', 'plans.html'))),
   get('/signup', ctx => render(path.join(__dirname, 'public', 'signup.html'))),
   get('/login', ctx => render(path.join(__dirname, 'public', 'login.html'))),
 
-  // API: جلب الكوينز (يمكنك لاحقًا ربطه بمستخدم)
   get('/api/coins', ctx => json({ coins: 2500 })),
 
-  // API: التسجيل
+  // ===== SIGNUP =====
   post('/signup', async ctx => {
-    const { username, password } = ctx.data;
+    try {
+      const { username, password, email } = ctx.data;
 
-    if (!username || !password || username.length < 3) {
-      return json({ success: false, error: 'Username must be at least 3 characters' });
+      if (!username || !password || username.length < 3 || !email) {
+        return json({ success: false, error: 'Username, password and email are required' });
+      }
+
+      // Fetch current users
+      let users = await fetchUsersFromJsonBin();
+
+      if (users.some(u => u.username === username)) {
+        return json({ success: false, error: 'Username already exists' });
+      }
+
+      // Save user to JSONBin
+      const newUser = {
+        id: Date.now(),
+        username,
+        password, // ⚠️ استخدم bcrypt لاحقًا
+        email,
+        coins: 1000,
+        createdAt: new Date().toISOString()
+      };
+      users.push(newUser);
+      const saved = await saveUsersToJsonBin(users);
+      if (!saved) return json({ success: false, error: 'Failed to save user data' });
+
+      // Create user in Pterodactyl
+      const created = await createPterodactylUser(username, password, email);
+      if (!created) {
+        return json({ success: true, warning: 'User saved in JSONBin but failed to create in Pterodactyl' });
+      }
+
+      return json({ success: true });
+
+    } catch (err) {
+      console.error('Signup Error:', err.message);
+      return status(500).send(err.message);
     }
-
-    let users = await fetchUsersFromJsonBin();
-
-    if (users.some(u => u.username === username)) {
-      return json({ success: false, error: 'Username already exists' });
-    }
-
-    const newUser = {
-      id: Date.now(),
-      username,
-      password, // ⚠️ استخدم bcrypt في الإنتاج!
-      coins: 1000,
-      createdAt: new Date().toISOString()
-    };
-
-    users.push(newUser);
-    // حفظ في JSONBin
-    const saved = await saveUsersToJsonBin(users);
-    if (!saved) {
-      return json({ success: false, error: 'Failed to save user data' });
-    }
-
-    // إنشاء خادم في Pterodactyl
-    const serverCreated = await createPterodactylServer(username);
-    if (!serverCreated) {
-      console.warn(`⚠️ User ${username} saved but server creation failed.`);
-    }
-
-    return json({ success: true });
   }),
 
-  // API: تسجيل الدخول (بسيط)
+  // ===== LOGIN =====
   post('/login', async ctx => {
-    const { username, password } = ctx.data;
-    const users = await fetchUsersFromJsonBin();
-    const user = users.find(u => u.username === username && u.password === password);
-    if (user) {
-      return json({ success: true, username });
+    try {
+      const { username, password } = ctx.data;
+      const users = await fetchUsersFromJsonBin();
+      const user = users.find(u => u.username === username && u.password === password);
+      if (user) return json({ success: true, username });
+      return json({ success: false, error: 'Invalid credentials' });
+    } catch (err) {
+      console.error('Login Error:', err.message);
+      return status(500).send(err.message);
     }
-    return json({ success: false, error: 'Invalid credentials' });
+  }),
+
+  // ===== GLOBAL ERROR HANDLER =====
+  server.router.error(ctx => {
+    console.error('Unhandled Error:', ctx.error);
+    return status(500).send('Internal Server Error');
   })
 );
