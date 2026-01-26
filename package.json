@@ -1,0 +1,35 @@
+{
+  "name": "belvohost",
+  "version": "1.0.0",
+  "description": "Advanced Hosting Platform by BelvoHost - Built by Falcon & Nexus Codes",
+  "main": "server.js",
+  "scripts": {
+    "start": "node server.js",
+    "dev": "nodemon server.js"
+  },
+  "keywords": [
+    "hosting",
+    "minecraft",
+    "samp",
+    "discord-bot",
+    "pterodactyl",
+    "jsonbin",
+    "belvohost"
+  ],
+  "author": "Falcon <ceo@belvohost.com>",
+  "license": "MIT",
+  "dependencies": {
+    "server": "^1.0.34",
+    "node-fetch": "^2.7.0"
+  },
+  "devDependencies": {
+    "nodemon": "^3.1.0"
+  },
+  "engines": {
+    "node": ">=16.0.0"
+  },
+  "repository": {
+    "type": "git",
+    "url": "https://github.com/yourusername/belvohost.git"
+  }
+}
