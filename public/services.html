@@ -1,0 +1,173 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<title>SlowDeath | Services</title>
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+
+<!-- Google Fonts -->
+<link href="https://fonts.googleapis.com/css2?family=Poppins:wght@300;400;600;700&display=swap" rel="stylesheet">
+
+<style>
+:root {
+  --bg: #000;
+  --card: rgba(17,17,17,0.85);
+  --text: #fff;
+  --muted: #999;
+  --primary: #fff;
+}
+
+* {
+  margin: 0;
+  padding: 0;
+  box-sizing: border-box;
+  font-family: 'Poppins', sans-serif;
+}
+
+body {
+  min-height: 100vh;
+  background: url("https://i.ibb.co/rKy3NFNj/bg.png") no-repeat center center fixed;
+  background-size: cover;
+  color: var(--text);
+  overflow-x: hidden;
+  position: relative;
+}
+
+body::before {
+  content: "";
+  position: fixed;
+  top: 0; left: 0;
+  width: 100%; height: 100%;
+  background: rgba(0,0,0,0.5);
+  z-index: -1;
+}
+
+/* Header */
+header {
+  padding: 40px 20px;
+  text-align: center;
+}
+
+header h1 {
+  font-size: 3rem;
+  letter-spacing: 4px;
+  margin-bottom: 10px;
+}
+
+header p {
+  color: var(--muted);
+}
+
+/* Services Section */
+.services-container {
+  max-width: 1200px;
+  margin: 50px auto;
+  display: grid;
+  grid-template-columns: repeat(auto-fit, minmax(280px, 1fr));
+  gap: 30px;
+  padding: 0 20px;
+}
+
+.card {
+  background: var(--card);
+  padding: 30px 20px;
+  border-radius: 20px;
+  backdrop-filter: blur(8px);
+  box-shadow: 0 0 15px rgba(0,0,0,0.5);
+  transition: transform 0.4s, box-shadow 0.4s;
+  opacity: 0;
+  transform: translateY(30px);
+}
+
+.card.show {
+  opacity: 1;
+  transform: translateY(0);
+}
+
+.card h3 {
+  margin-bottom: 15px;
+}
+
+.card p {
+  color: var(--muted);
+}
+
+/* Hover effect */
+.card:hover {
+  transform: translateY(-10px);
+  box-shadow: 0 0 25px rgba(255,255,255,0.9);
+}
+
+/* Footer */
+footer {
+  text-align: center;
+  padding: 20px;
+  color: var(--muted);
+  font-size: 0.8rem;
+  border-top: 1px solid #222;
+}
+
+/* Responsive */
+@media(max-width:768px){
+  header h1 {
+    font-size: 2.2rem;
+  }
+  .services-container {
+    grid-template-columns: 1fr;
+  }
+}
+</style>
+</head>
+
+<body>
+
+<header>
+  <h1>OUR SERVICES</h1>
+  <p>Explore the core technical services offered by SlowDeath Team</p>
+</header>
+
+<section class="services-container">
+  <div class="card">
+    <h3>Web Development</h3>
+    <p>Modern, responsive, and scalable websites with clean code.</p>
+  </div>
+  <div class="card">
+    <h3>Cybersecurity</h3>
+    <p>Protecting systems, networks, and applications from digital attacks.</p>
+  </div>
+  <div class="card">
+    <h3>Tools & Scripts</h3>
+    <p>Custom technical tools and automation scripts for efficiency.</p>
+  </div>
+  <div class="card">
+    <h3>Research & Innovation</h3>
+    <p>Advanced research to create innovative solutions and strategies.</p>
+  </div>
+</section>
+
+<footer>
+  © 2026 SlowDeath Team
+</footer>
+
+<script>
+// Animate cards on scroll
+const cards = document.querySelectorAll(".card");
+
+function showCards() {
+  const triggerBottom = window.innerHeight * 0.9;
+
+  cards.forEach(card => {
+    const cardTop = card.getBoundingClientRect().top;
+
+    if(cardTop < triggerBottom){
+      card.classList.add("show");
+    }
+  });
+}
+
+window.addEventListener("scroll", showCards);
+window.addEventListener("load", showCards);
+</script>
+
+</body>
+</html>
