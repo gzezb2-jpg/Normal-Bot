@@ -1,0 +1,243 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<title>Signup - BelvoHost Advanced</title>
+
+<!-- Font Awesome for eye icon -->
+<link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.0/css/all.min.css"/>
+
+<style>
+/* ===== GLOBAL ===== */
+body, html {
+  margin:0;
+  height:100%;
+  overflow:hidden;
+  font-family: 'Arial', sans-serif;
+  background: url('/images/file_00000000cc34720aa65b11d4686cb3fc.png') no-repeat center center fixed;
+  background-size: cover;
+  color: white;
+}
+
+/* 3D Canvas */
+#canvas3d {
+  position: fixed;
+  top:0; left:0;
+  width:100%; height:100%;
+  z-index:0;
+}
+
+/* ===== SIGNUP CONTAINER ===== */
+#signup-container {
+  position: absolute;
+  top:50%;
+  left:50%;
+  transform: translate(-50%,-50%);
+  background: rgba(0,0,0,0.75);
+  padding:40px;
+  border-radius:15px;
+  text-align:center;
+  width:320px;
+  box-shadow: 0 0 20px rgba(255,255,255,0.2);
+  animation: fadeIn 1.5s ease forwards;
+  opacity:0;
+}
+
+/* ===== INPUTS & BUTTONS ===== */
+input[type=text], input[type=password] {
+  width:100%;
+  padding:12px;
+  margin:10px 0;
+  border-radius:8px;
+  border:none;
+  outline:none;
+  font-size:14px;
+  transition: 0.3s;
+}
+input:focus {
+  transform: scale(1.02);
+  box-shadow: 0 0 10px #4f46e5;
+}
+
+/* Container for input + icon */
+.input-wrapper {
+  position: relative;
+}
+
+/* Eye icon */
+.input-wrapper i {
+  position: absolute;
+  top:50%;
+  right:10px;
+  transform: translateY(-50%);
+  cursor:pointer;
+  color:#4f46e5;
+  transition: 0.3s;
+}
+.input-wrapper i:hover {
+  color:#6366f1;
+}
+
+/* Button */
+button {
+  width:100%;
+  padding:12px;
+  margin:10px 0;
+  border-radius:8px;
+  border:none;
+  font-weight:bold;
+  background:#4f46e5;
+  color:white;
+  cursor:pointer;
+  transition: 0.3s;
+}
+button:hover {
+  background:#6366f1;
+  transform: scale(1.05);
+}
+
+/* Login link */
+#login-link {
+  margin-top:15px;
+  display:block;
+  color:#facc15;
+  font-weight:bold;
+  cursor:pointer;
+  text-decoration: underline;
+  animation: bounce 2s infinite;
+}
+
+/* Message */
+#message {
+  font-weight:bold;
+  margin-top:10px;
+}
+
+/* Animations */
+@keyframes fadeIn {
+  0% {opacity:0; transform: translate(-50%, -60%);}
+  100% {opacity:1; transform: translate(-50%, -50%);}
+}
+
+@keyframes bounce {
+  0%, 100% { transform: translateY(0); }
+  50% { transform: translateY(-8px); }
+}
+</style>
+</head>
+<body>
+
+<!-- 3D Model Canvas -->
+<canvas id="canvas3d"></canvas>
+
+<div id="signup-container">
+  <h2>Signup</h2>
+  <div class="input-wrapper">
+    <input type="text" id="username" placeholder="Username">
+  </div>
+  <div class="input-wrapper">
+    <input type="password" id="password" placeholder="Password">
+    <i id="togglePassword" class="fa-solid fa-eye"></i>
+  </div>
+  <button onclick="signup()">Create Account</button>
+  <p id="message"></p>
+  <span id="login-link" onclick="goLogin()">Already have an account? Login</span>
+</div>
+
+<!-- Three.js Library -->
+<script src="https://cdnjs.cloudflare.com/ajax/libs/three.js/r152/three.min.js"></script>
+<script>
+// ===== THREE.JS 3D SCENE =====
+const scene = new THREE.Scene();
+const camera = new THREE.PerspectiveCamera(75, window.innerWidth/window.innerHeight, 0.1, 1000);
+const renderer = new THREE.WebGLRenderer({canvas: document.getElementById('canvas3d'), alpha:true});
+renderer.setSize(window.innerWidth, window.innerHeight);
+
+// Rotating Sphere
+const geometry = new THREE.SphereGeometry(1.2, 32, 32);
+const material = new THREE.MeshStandardMaterial({ color: 0xfacc15, metalness:0.5, roughness:0.3 });
+const sphere = new THREE.Mesh(geometry, material);
+scene.add(sphere);
+
+// Lights
+const light1 = new THREE.PointLight(0xffffff, 1.2);
+light1.position.set(5,5,5);
+scene.add(light1);
+const light2 = new THREE.AmbientLight(0x404040, 1.5);
+scene.add(light2);
+
+// Camera
+camera.position.z = 5;
+
+// Animate
+function animate(){
+  requestAnimationFrame(animate);
+  sphere.rotation.x += 0.01;
+  sphere.rotation.y += 0.01;
+  renderer.render(scene, camera);
+}
+animate();
+
+// Resize
+window.addEventListener('resize', ()=>{
+  camera.aspect = window.innerWidth/window.innerHeight;
+  camera.updateProjectionMatrix();
+  renderer.setSize(window.innerWidth, window.innerHeight);
+});
+</script>
+
+<script>
+// ===== SHOW/HIDE PASSWORD =====
+const togglePassword = document.getElementById("togglePassword");
+const password = document.getElementById("password");
+
+togglePassword.addEventListener("click", function(){
+  const type = password.type === "password" ? "text" : "password";
+  password.type = type;
+  this.classList.toggle("fa-eye");
+  this.classList.toggle("fa-eye-slash");
+});
+
+// ===== LOGIN NAVIGATION =====
+function goLogin(){
+  window.location.href = "login.html"; // ضع هنا رابط صفحتك
+}
+
+// ===== SIGNUP FUNCTION =====
+async function signup(){
+  const username = document.getElementById("username").value;
+  const passwordVal = document.getElementById("password").value;
+  const message = document.getElementById("message");
+
+  if(!username || !passwordVal){
+    message.style.color = "#ff5555";
+    message.innerText = "Please fill all fields!";
+    return;
+  }
+
+  try{
+    // إرسال الطلب إلى السيرفر (server.js) لإنشاء الحساب + VPS
+    const res = await fetch("/signup",{
+      method:"POST",
+      headers:{"Content-Type":"application/json"},
+      body: JSON.stringify({username,password:passwordVal})
+    });
+
+    const data = await res.json();
+    if(data.success){
+      message.style.color = "#4ade80";
+      message.innerText = "Account Created! Redirecting...";
+      setTimeout(()=> window.location.href="dashboard.html", 1200);
+    } else {
+      message.style.color = "#ff5555";
+      message.innerText = data.error || "Signup Failed!";
+    }
+  } catch(err){
+    message.style.color = "#ff5555";
+    message.innerText = "Error connecting to server!";
+  }
+}
+</script>
+
+</body>
+</html>
