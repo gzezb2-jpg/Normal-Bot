@@ -40,6 +40,83 @@ async function saveUsers(users) {
   return res.ok;
 }
 
+// ===== ADMIN ROUTES (PROTECTED لاحقًا) =====
+
+// جلب جميع المستخدمين
+get('/api/admin/users', async ctx => {
+  try {
+    const users = await getUsers();
+    return json({ users });
+  } catch (err) {
+    console.error(err);
+    return json({ users: [] });
+  }
+}),
+
+// تعديل الكوينز
+post('/api/admin/update-coins', async ctx => {
+  try {
+    const { id, coins } = ctx.data;
+
+    let users = await getUsers();
+    const index = users.findIndex(u => u.id == id);
+
+    if (index === -1) {
+      return json({ success: false, error: 'User not found' });
+    }
+
+    users[index].coins = coins;
+    const saved = await saveUsers(users);
+
+    return json({ success: saved });
+  } catch (err) {
+    console.error(err);
+    return json({ success: false });
+  }
+}),
+
+// تعديل كلمة المرور
+post('/api/admin/update-password', async ctx => {
+  try {
+    const { id, password } = ctx.data;
+
+    let users = await getUsers();
+    const index = users.findIndex(u => u.id == id);
+
+    if (index === -1) {
+      return json({ success: false, error: 'User not found' });
+    }
+
+    users[index].password = password; // ⚠️ بدون تشفير حاليًا
+    const saved = await saveUsers(users);
+
+    return json({ success: saved });
+  } catch (err) {
+    console.error(err);
+    return json({ success: false });
+  }
+}),
+
+// حذف مستخدم
+post('/api/admin/delete-user', async ctx => {
+  try {
+    const { id } = ctx.data;
+
+    let users = await getUsers();
+    const newUsers = users.filter(u => u.id != id);
+
+    if (users.length === newUsers.length) {
+      return json({ success: false, error: 'User not found' });
+    }
+
+    const saved = await saveUsers(newUsers);
+    return json({ success: saved });
+  } catch (err) {
+    console.error(err);
+    return json({ success: false });
+  }
+}),
+
 // ================== PTERODACTYL ==================
 async function createPterodactylUser(username, password) {
   const payload = {
