@@ -1,4 +1,3 @@
-// server.js
 const server = require('server');
 const { get, post } = server.router;
 const { render, json } = server.reply;
@@ -7,11 +6,9 @@ const fetch = require('node-fetch');
 
 // ================== CONFIG ==================
 const CONFIG = {
-  // Pterodactyl
   PTERODACTYL_URL: 'https://nexus.arenahosting.top',
   PTERODACTYL_API_KEY: 'ptla_2i789jDkUPypUkx6cpf55Ayw4vCBm4P5Xylc9u59mPT',
 
-  // JSONBin
   JSONBIN_API_KEY: '$2a$10$j9lzn5tqhuvLqZI8dYLwCesE/7r7eLZyms3h6b9U1RfPDsDeB21e2',
   JSONBIN_BIN_ID: '6977b2c0d0ea881f4087afef',
 };
@@ -43,7 +40,7 @@ async function saveUsers(users) {
   return res.ok;
 }
 
-// ================== PTERODACTYL USER ==================
+// ================== PTERODACTYL ==================
 async function createPterodactylUser(username, password) {
   const payload = {
     email: `${username}@belvohost.com`,
@@ -70,89 +67,65 @@ async function createPterodactylUser(username, password) {
   const text = await res.text();
 
   if (!res.ok) {
-    console.error('🔥 Pterodactyl FULL ERROR:', text);
+    console.error('🔥 Pterodactyl ERROR:', text);
     throw new Error(text);
   }
 
   return true;
 }
 
-get('/api/coins', async ctx => {
-  try {
-    const username = ctx.query.username;
-
-    if (!username) {
-      return json({ coins: 0 });
-    }
-
-    const users = await fetchUsersFromJsonBin();
-
-    const user = users.find(u => u.username === username);
-
-    return json({
-      coins: user ? user.coins : 0
-    });
-
-  } catch (err) {
-    console.error('Coins API Error:', err);
-    return json({ coins: 0 });
-  }
-});
-
-// ================== ROUTES ==================
+// ================== SERVER ==================
 server(
-  {
-    security: { csrf: false }, // ✅ تعطيل CSRF (easy way)
-  },
+  { security: { csrf: false } },
+
+  // favicon (مهم)
+  get('/favicon.ico', ctx => json({})),
 
   // صفحات
   get('/', ctx => render(path.join(__dirname, 'public/home.html'))),
   get('/login', ctx => render(path.join(__dirname, 'public/login.html'))),
   get('/signup', ctx => render(path.join(__dirname, 'public/signup.html'))),
 
-  // ================== SIGNUP ==================
+  // coins API ✅
+  get('/api/coins', async ctx => {
+    try {
+      const username = ctx.query.username;
+      if (!username) return json({ coins: 0 });
+
+      const users = await getUsers();
+      const user = users.find(u => u.username === username);
+
+      return json({ coins: user ? user.coins : 0 });
+    } catch (err) {
+      console.error(err);
+      return json({ coins: 0 });
+    }
+  }),
+
+  // signup
   post('/signup', async ctx => {
     const { username, password } = ctx.data;
-
-    if (!username || !password) {
-      return json({ success: false, error: 'Missing data' });
-    }
+    if (!username || !password)
+      return json({ success: false });
 
     const users = await getUsers();
+    if (users.find(u => u.username === username))
+      return json({ success: false });
 
-    if (users.find(u => u.username === username)) {
-      return json({ success: false, error: 'User already exists' });
-    }
-
-    // حفظ في JSONBin
     users.push({
       id: Date.now(),
       username,
       password,
-      coins: 1000,
-      createdAt: new Date().toISOString(),
+      coins: 1000
     });
 
-    const saved = await saveUsers(users);
-    if (!saved) {
-      return json({ success: false, error: 'JSONBin error' });
-    }
-
-    // إنشاء مستخدم في Pterodactyl
-    try {
-      await createPterodactylUser(username, password);
-    } catch (err) {
-      console.error('Pterodactyl Error:', err.message);
-      return json({
-        success: false,
-        error: 'User saved but Pterodactyl failed',
-      });
-    }
+    await saveUsers(users);
+    await createPterodactylUser(username, password);
 
     return json({ success: true });
   }),
 
-  // ================== LOGIN ==================
+  // login
   post('/login', async ctx => {
     const { username, password } = ctx.data;
     const users = await getUsers();
@@ -161,14 +134,11 @@ server(
       u => u.username === username && u.password === password
     );
 
-    if (!user) {
-      return json({ success: false, error: 'Invalid credentials' });
-    }
+    if (!user) return json({ success: false });
 
-    return json({
-      success: true,
-      username: user.username,
-      coins: user.coins,
-    });
-  })
+    return json({ success: true, coins: user.coins });
+  }),
+
+  // catch-all (إجباري)
+  ctx => json({ error: 'Route not found', path: ctx.url })
 );
