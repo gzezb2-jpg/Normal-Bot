@@ -15,207 +15,83 @@ const CONFIG = {
 
 // ================== JSONBIN ==================
 async function getUsers() {
-  const res = await fetch(
-    `https://api.jsonbin.io/v3/b/${CONFIG.JSONBIN_BIN_ID}`,
-    {
+  try {
+    const res = await fetch(`https://api.jsonbin.io/v3/b/${CONFIG.JSONBIN_BIN_ID}`, {
       headers: { 'X-Master-Key': CONFIG.JSONBIN_API_KEY },
-    }
-  );
-  const data = await res.json();
-  return data.record.users || [];
+    });
+    const data = await res.json();
+    return data.record?.users || [];
+  } catch (err) {
+    console.error('Error fetching users from JSONBin:', err);
+    return [];
+  }
 }
 
 async function saveUsers(users) {
-  const res = await fetch(
-    `https://api.jsonbin.io/v3/b/${CONFIG.JSONBIN_BIN_ID}`,
-    {
+  try {
+    const res = await fetch(`https://api.jsonbin.io/v3/b/${CONFIG.JSONBIN_BIN_ID}`, {
       method: 'PUT',
       headers: {
         'Content-Type': 'application/json',
         'X-Master-Key': CONFIG.JSONBIN_API_KEY,
       },
       body: JSON.stringify({ users }),
-    }
-  );
-  return res.ok;
+    });
+    return res.ok;
+  } catch (err) {
+    console.error('Error saving users to JSONBin:', err);
+    return false;
+  }
 }
 
-// ===== ADMIN ROUTES (PROTECTED لاحقًا) =====
-
-// جلب جميع المستخدمين
+// ===== ADMIN ROUTES =====
 get('/api/admin/users', async ctx => {
-  try {
-    const users = await getUsers();
-    return json({ users });
-  } catch (err) {
-    console.error(err);
-    return json({ users: [] });
-  }
-}),
+  const users = await getUsers();
+  return json({ users });
+});
 
-// تعديل الكوينز
 post('/api/admin/update-coins', async ctx => {
-  try {
-    const { id, coins } = ctx.data;
+  const { id, coins } = ctx.data;
+  let users = await getUsers();
+  const index = users.findIndex(u => u.id == id);
+  if (index === -1) return json({ success: false, error: 'User not found' });
 
-    let users = await getUsers();
-    const index = users.findIndex(u => u.id == id);
+  users[index].coins = coins;
+  const saved = await saveUsers(users);
+  return json({ success: saved });
+});
 
-    if (index === -1) {
-      return json({ success: false, error: 'User not found' });
-    }
-
-    users[index].coins = coins;
-    const saved = await saveUsers(users);
-
-    return json({ success: saved });
-  } catch (err) {
-    console.error(err);
-    return json({ success: false });
-  }
-}),
-
-// تعديل كلمة المرور
 post('/api/admin/update-password', async ctx => {
-  try {
-    const { id, password } = ctx.data;
+  const { id, password } = ctx.data;
+  let users = await getUsers();
+  const index = users.findIndex(u => u.id == id);
+  if (index === -1) return json({ success: false, error: 'User not found' });
 
-    let users = await getUsers();
-    const index = users.findIndex(u => u.id == id);
+  users[index].password = password; // ⚠️ بدون تشفير
+  const saved = await saveUsers(users);
+  return json({ success: saved });
+});
 
-    if (index === -1) {
-      return json({ success: false, error: 'User not found' });
-    }
-
-    users[index].password = password; // ⚠️ بدون تشفير حاليًا
-    const saved = await saveUsers(users);
-
-    return json({ success: saved });
-  } catch (err) {
-    console.error(err);
-    return json({ success: false });
-  }
-}),
-
-// حذف مستخدم
 post('/api/admin/delete-user', async ctx => {
-  try {
-    const { id } = ctx.data;
+  const { id } = ctx.data;
+  let users = await getUsers();
+  const newUsers = users.filter(u => u.id != id);
+  if (newUsers.length === users.length) return json({ success: false, error: 'User not found' });
 
-    let users = await getUsers();
-    const newUsers = users.filter(u => u.id != id);
-
-    if (users.length === newUsers.length) {
-      return json({ success: false, error: 'User not found' });
-    }
-
-    const saved = await saveUsers(newUsers);
-    return json({ success: saved });
-  } catch (err) {
-    console.error(err);
-    return json({ success: false });
-  }
-}),
-
-// ================== PTERODACTYL ==================
-async function createPterodactylUser(username, password) {
-  const payload = {
-    email: `${username}@belvohost.com`,
-    username,
-    first_name: username,
-    last_name: 'User',
-    password: password.length < 8 ? password + 'A1!' : password,
-    root_admin: false
-  };
-
-  const res = await fetch(
-    `${CONFIG.PTERODACTYL_URL}/api/application/users`,
-    {
-      method: 'POST',
-      headers: {
-        Authorization: `Bearer ${CONFIG.PTERODACTYL_API_KEY}`,
-        'Content-Type': 'application/json',
-        Accept: 'application/json'
-      },
-      body: JSON.stringify(payload)
-    }
-  );
-
-  const text = await res.text();
-
-  if (!res.ok) {
-    console.error('🔥 Pterodactyl ERROR:', text);
-    throw new Error(text);
-  }
-
-  return true;
-}
+  const saved = await saveUsers(newUsers);
+  return json({ success: saved });
+});
 
 // ================== SERVER ==================
 server(
   { security: { csrf: false } },
 
-  // favicon (مهم)
   get('/favicon.ico', ctx => json({})),
 
-  // صفحات
   get('/', ctx => render(path.join(__dirname, 'public/home.html'))),
   get('/login', ctx => render(path.join(__dirname, 'public/login.html'))),
   get('/signup', ctx => render(path.join(__dirname, 'public/signup.html'))),
+  get('/admin-users', ctx => render(path.join(__dirname, 'public/admin-users.html'))),
 
-  // coins API ✅
-  get('/api/coins', async ctx => {
-    try {
-      const username = ctx.query.username;
-      if (!username) return json({ coins: 0 });
-
-      const users = await getUsers();
-      const user = users.find(u => u.username === username);
-
-      return json({ coins: user ? user.coins : 0 });
-    } catch (err) {
-      console.error(err);
-      return json({ coins: 0 });
-    }
-  }),
-
-  // signup
-  post('/signup', async ctx => {
-    const { username, password } = ctx.data;
-    if (!username || !password)
-      return json({ success: false });
-
-    const users = await getUsers();
-    if (users.find(u => u.username === username))
-      return json({ success: false });
-
-    users.push({
-      id: Date.now(),
-      username,
-      password,
-      coins: 1000
-    });
-
-    await saveUsers(users);
-    await createPterodactylUser(username, password);
-
-    return json({ success: true });
-  }),
-
-  // login
-  post('/login', async ctx => {
-    const { username, password } = ctx.data;
-    const users = await getUsers();
-
-    const user = users.find(
-      u => u.username === username && u.password === password
-    );
-
-    if (!user) return json({ success: false });
-
-    return json({ success: true, coins: user.coins });
-  }),
-
-  // catch-all (إجباري)
   ctx => json({ error: 'Route not found', path: ctx.url })
 );
