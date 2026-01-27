@@ -219,6 +219,8 @@ async function login(){
     if(data.success){
       message.style.color = "#4ade80";
       message.innerText = "Login Successful!";
+
+    localStorage.setItem('belvohost_user', username);
       setTimeout(()=> window.location.href="home.html", 1000);
     } else {
       message.style.color = "#ff5555";
