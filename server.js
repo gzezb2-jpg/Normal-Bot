@@ -77,6 +77,24 @@ async function createPterodactylUser(username, password) {
   return true;
 }
 
+// API: جلب رصيد المستخدم حسب اسمه
+get('/api/coins', async ctx => {
+  const username = ctx.query.username;
+  if (!username) {
+    return json({ coins: 0 });
+  }
+
+  try {
+    const users = await fetchUsersFromJsonBin();
+    const user = users.find(u => u.username === username);
+    const coins = user ? user.coins : 0;
+    return json({ coins });
+  } catch (err) {
+    console.error('Coins API Error:', err.message);
+    return json({ coins: 0 });
+  }
+}),
+
 // ================== ROUTES ==================
 server(
   {
