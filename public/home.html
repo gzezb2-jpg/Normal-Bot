@@ -225,7 +225,7 @@
 
     .plan button:hover {
       background: var(--primary-light);
-      transform: scale(1.03);
+      transform: scale(1.09);
     }
 
     /* Contact */
@@ -348,17 +348,17 @@
     <div class="plan">
       <h4><i class="fas fa-cube"></i> Minecraft Hosting</h4>
       <p>Reliable and fast servers for Minecraft players with DDoS protection & instant setup.</p>
-      <button>Request Host</button>
+      <button onclick="goplan()">Request Host</button>
     </div>
     <div class="plan">
       <h4><i class="fas fa-gamepad"></i> SAMP Hosting</h4>
       <p>Optimized servers for SAMP multiplayer with custom plugins & low latency.</p>
-      <button>Request Host</button>
+      <button onclick="goplan()">Request Host</button>
     </div>
     <div class="plan">
       <h4><i class="fab fa-discord"></i> Discord Bot Hosting</h4>
       <p>Run your Discord bots 24/7 without downtime on powerful nodes.</p>
-      <button>Request Host</button>
+      <button onclick="goplan()">Request Host</button>
     </div>
   </div>
 </section>
@@ -376,6 +376,9 @@
 </section>
 
 <script>
+function goplan(){
+  window.location.href = "plans.html"; // ضع هنا رابط صفحتك
+}
   // جلب الكوينز من السيرفر (Server.js)
   async function loadUserCoins() {
   try {
