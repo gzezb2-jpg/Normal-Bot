@@ -76,19 +76,6 @@
       transform: translateY(-2px);
     }
 
-    .coins-display {
-      display: flex;
-      align-items: center;
-      gap: 6px;
-      background: rgba(79, 70, 229, 0.2);
-      padding: 8px 14px;
-      border-radius: 12px;
-      font-weight: bold;
-      color: var(--accent);
-      backdrop-filter: blur(5px);
-      border: 1px solid rgba(250, 204, 21, 0.3);
-      margin-left: 10px;
-    }
 
     /* Mobile Menu Toggle */
     .menu-toggle {
@@ -285,15 +272,7 @@
       }
       .menu-toggle.active span:nth-child(3) {
         transform: rotate(-45deg) translate(6px, -6px);
-      }
-
-      .coins-display {
-        justify-content: center;
-        margin-left: 0;
-        width: 100%;
-        background: rgba(10, 10, 20, 0.7);
-        margin-top: 10px;      }
-
+    
       #hero h2 {
         font-size: 2.4rem;
       }
@@ -329,9 +308,6 @@
     <a href="#plans">Plans</a>
     <a href="#about">About Us</a>
     <a href="#contact">Contact</a>
-    <div class="coins-display">
-      <i class="fas fa-coins"></i> <span id="userCoins">—</span> Coins
-    </div>
   </nav>
 </header>
 
@@ -350,9 +326,11 @@
       <p>Reliable and fast servers for Minecraft players with DDoS protection & instant setup.</p>
       <button onclick="goplan()">Request Host</button>
     </div>
+     <div class="plan">
+      <h4><i class="fas fa-gamepad"></i> SAMP Hosting</h4>
+      <p>Optimized servers for SAMP multiplayer with custom plugins & low latency.</p>
       <button onclick="goplan()">Request Host</button>
-    </div>
-
+    </div>   
     <div class="plan">
       <h4><i class="fab fa-discord"></i> Discord Bot Hosting</h4>
       <p>Run your Discord bots 24/7 without downtime on powerful nodes.</p>
@@ -378,24 +356,6 @@ function goplan(){
   window.location.href = "plans.html"; // ضع هنا رابط صفحتك
 }
   // جلب الكوينز من السيرفر (Server.js)
-  async function loadUserCoins() {
-  try {
-    const username = localStorage.getItem('belvohost_user');
-    if (!username) {
-      document.getElementById('userCoins').textContent = '—';
-      return;
-    }
-
-    const res = await fetch(`/api/coins?username=${encodeURIComponent(username)}`);
-    if (!res.ok) throw new Error('Network error');
-    
-    const data = await res.json();
-    document.getElementById('userCoins').textContent = data.coins.toLocaleString();
-  } catch (err) {
-    console.error('Failed to load coins:', err);
-    document.getElementById('userCoins').textContent = '—';
-  }
-}
 
   // Mobile Menu Toggle
   const menuToggle = document.getElementById('menuToggle');  const nav = document.getElementById('mainNav');
@@ -413,8 +373,7 @@ function goplan(){
   });
 
   // تحميل الكوينز عند فتح الصفحة
-  document.addEventListener('DOMContentLoaded', loadUserCoins);
-</script>
+  </script>
 
 </body>
 </html>
